@@ -37,7 +37,7 @@ Future<Map<String, dynamic>> fetchUser(
 /// Returns a list of [types.Room] created from Firebase query.
 /// If room has 2 participants, sets correct room name and image.
 Future<List<types.Room>> processRoomsQuery(
-  User firebaseUser,
+  String userId,
   FirebaseFirestore instance,
   QuerySnapshot<Map<String, dynamic>> query,
   String usersCollectionName,
@@ -45,7 +45,7 @@ Future<List<types.Room>> processRoomsQuery(
   final futures = query.docs.map(
     (doc) => processRoomDocument(
       doc,
-      firebaseUser,
+      userId,
       instance,
       usersCollectionName,
     ),
@@ -57,7 +57,7 @@ Future<List<types.Room>> processRoomsQuery(
 /// Returns a [types.Room] created from Firebase document.
 Future<types.Room> processRoomDocument(
   DocumentSnapshot<Map<String, dynamic>> doc,
-  User firebaseUser,
+  String userId,
   FirebaseFirestore instance,
   String usersCollectionName,
 ) async {
@@ -87,12 +87,11 @@ Future<types.Room> processRoomDocument(
   if (type == types.RoomType.direct.toShortString()) {
     try {
       final otherUser = users.firstWhere(
-        (u) => u['id'] != firebaseUser.uid,
+        (u) => u['id'] != userId,
       );
 
       imageUrl = otherUser['imageUrl'] as String?;
-      name = '${otherUser['firstName'] ?? ''} ${otherUser['lastName'] ?? ''}'
-          .trim();
+      name = '${otherUser['firstName'] ?? ''} ${otherUser['lastName'] ?? ''}'.trim();
     } catch (e) {
       // Do nothing if other user is not found, because he should be found.
       // Consider falling back to some default values.
