@@ -6,8 +6,6 @@ version: 1.6.4
 homepage: https://flyer.chat
 repository: https://github.com/flyerhq/flutter_firebase_chat_core
 
-publish_to: none
-
 environment:
   sdk: ">=2.18.0 <3.0.0"
   flutter: ">=2.0.0"
