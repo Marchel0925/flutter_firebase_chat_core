@@ -23,6 +23,12 @@ class FirebaseChatCore {
   late FirebaseDatabase database;
   late DatabaseReference usersRef;
 
+  final List<String> superAdmins = [
+    'joonas@rebound.business',
+    'mikelis@prog.lv',
+    'marcis.andersons@prog.lv',
+  ];
+
   /// Creates a chat group room with [users]. Creator is automatically
   /// added to the group. [name] is required and will be used as
   /// a group name. Add an optional [imageUrl] that will be a group avatar
@@ -146,6 +152,10 @@ class FirebaseChatCore {
       final data = doc.data() as Map<String, dynamic>;
       data['createdAt'] = (data['createdAt'] as Timestamp).millisecondsSinceEpoch;
       data['updatedAt'] = (data['updatedAt'] as Timestamp).millisecondsSinceEpoch;
+
+      final email = (data['metadata'] as Map<String, dynamic>)['email'];
+      data['role'] = superAdmins.contains(email) ? 'admin' : 'user';
+
       room = types.Room.fromJson(data);
     }
     return room;
@@ -197,7 +207,10 @@ class FirebaseChatCore {
       metadata['phone'] = snapshot.value;
     }
 
-    user = user.copyWith(metadata: metadata);
+    user = user.copyWith(
+      metadata: metadata,
+      role: (metadata['email'] != null && superAdmins.contains(metadata['email'])) ? types.Role.admin : types.Role.user,
+    );
 
     return user;
   }
