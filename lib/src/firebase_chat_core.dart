@@ -154,6 +154,18 @@ class FirebaseChatCore {
       data['updatedAt'] = (data['updatedAt'] as Timestamp).millisecondsSinceEpoch;
       data['id'] = doc.id;
 
+      final List? userIds = data['userIds'];
+
+      final users = [];
+      if (userIds != null) {
+        for (var id in userIds) {
+          final u = await fetchUserDatabase(usersRef: usersRef, userId: id);
+          users.add(u);
+        }
+      }
+
+      data['users'] = users;
+
       room = types.Room.fromJson(data);
     }
     return room;
