@@ -28,7 +28,6 @@ class FirebaseChatCore {
   /// a group name. Add an optional [imageUrl] that will be a group avatar
   /// and [metadata] for any additional custom data.
   Future<types.Room> createGroupRoom({
-    types.Role creatorRole = types.Role.admin,
     String? imageUrl,
     Map<String, dynamic>? metadata,
     required String name,

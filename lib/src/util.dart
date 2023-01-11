@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -86,7 +85,10 @@ Future<List<types.Room>> processRoomsQuery(
 
 /// Returns a [types.Room] created from Firebase document.
 Future<types.Room> processRoomDocument(
-    DocumentSnapshot<Map<String, dynamic>> doc, String userId, DatabaseReference usersRef) async {
+  DocumentSnapshot<Map<String, dynamic>> doc,
+  String userId,
+  DatabaseReference usersRef,
+) async {
   final data = doc.data()!;
 
   data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
