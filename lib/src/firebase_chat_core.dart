@@ -33,18 +33,11 @@ class FirebaseChatCore {
     required String name,
     required List<types.User> users,
   }) async {
-    // final currentUser = await fetchUser(
-    //   firestore(),
-    //   userId,
-    //   config.usersCollectionName,
-    //   role: creatorRole.toShortString(),
-    // );
-
     final currentUser = await fetchUserDatabase(usersRef: usersRef, userId: userId);
 
     final roomUsers = [types.User.fromJson(currentUser)] + users;
 
-    final room = await roomsCollection.add({
+    await roomsCollection.doc(name).set({
       'createdAt': FieldValue.serverTimestamp(),
       'imageUrl': imageUrl,
       'metadata': metadata,
@@ -62,7 +55,7 @@ class FirebaseChatCore {
     });
 
     return types.Room(
-      id: room.id,
+      id: name,
       imageUrl: imageUrl,
       metadata: metadata,
       name: name,
@@ -144,6 +137,69 @@ class FirebaseChatCore {
       type: types.RoomType.direct,
       users: users,
     );
+  }
+
+  Future<types.Room?> fetchRoom(String roomName) async {
+    final doc = await roomsCollection.doc(roomName).get();
+    types.Room? room;
+    if (doc.exists) {
+      final data = doc.data() as Map<String, dynamic>;
+      data['createdAt'] = (data['createdAt'] as Timestamp).millisecondsSinceEpoch;
+      data['updatedAt'] = (data['updatedAt'] as Timestamp).millisecondsSinceEpoch;
+      room = types.Room.fromJson(data);
+    }
+    return room;
+  }
+
+  Future<types.Room> addUserToGroupGroup(String userId, String roomName) async {
+    var room = await fetchRoom(roomName);
+    if (room == null) {
+      return Future.error("No room with name '$roomName'");
+    }
+    final users = room.users;
+    final user = await constructUser(userId);
+    users.add(user);
+    room = room.copyWith(users: users);
+
+    await roomsCollection.doc(room.name).set(room.toJson());
+
+    return room;
+  }
+
+  Future<types.User> constructUser(String userId) async {
+    var user = types.User(id: userId);
+    Map<String, dynamic>? metadata = {};
+    final userRef = usersRef.child(userId);
+    var snapshot = await userRef.child('email').get();
+
+    if (snapshot.value != null) {
+      metadata['email'] = snapshot.value;
+    }
+
+    snapshot = await userRef.child('registered').get();
+    if (snapshot.value != null) {
+      final mill = formatToTimestamp(snapshot.value as String).millisecondsSinceEpoch;
+      user = user.copyWith(createdAt: mill);
+    }
+
+    snapshot = await userRef.child('name').get();
+    if (snapshot.value != null) {
+      user = user.copyWith(firstName: snapshot.value as String);
+    }
+
+    snapshot = await userRef.child('machineNumber').get();
+    if (snapshot.value != null) {
+      metadata['machineNumber'] = snapshot.value;
+    }
+
+    snapshot = await userRef.child('phone').get();
+    if (snapshot.value != null) {
+      metadata['phone'] = snapshot.value;
+    }
+
+    user = user.copyWith(metadata: metadata);
+
+    return user;
   }
 
   /// Removes message document.
