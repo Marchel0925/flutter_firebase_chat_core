@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 /// Extension with one [toShortString] method.
@@ -30,6 +31,31 @@ Future<Map<String, dynamic>> fetchUser(
   data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
   data['role'] = role;
   data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
+
+  return data;
+}
+
+Future<Map<String, dynamic>> fetchUserDatabase(DatabaseReference userRef) async {
+  final List<String> neededParams = [];
+  final data = {};
+  var snapshot = await userRef.child('id').get();
+  if (snapshot.value == null) {
+    return Future.error('No id parameter');
+  } else {
+    data['id'] = snapshot.value;
+  }
+  snapshot = await userRef.child('role').get();
+  if (snapshot.value != 'admin') {
+    return Future.error('Insufficient permissions');
+  } else {
+    data['role'] = snapshot.value;
+  }
+  snapshot = await userRef.child('registration').get();
+  if (snapshot.value != 'admin') {
+    return Future.error('Insufficient permissions');
+  } else {
+    data['role'] = snapshot.value;
+  }
 
   return data;
 }
