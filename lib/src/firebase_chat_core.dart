@@ -152,6 +152,7 @@ class FirebaseChatCore {
       final data = doc.data() as Map<String, dynamic>;
       data['createdAt'] = (data['createdAt'] as Timestamp).millisecondsSinceEpoch;
       data['updatedAt'] = (data['updatedAt'] as Timestamp).millisecondsSinceEpoch;
+      data['id'] = doc.id;
 
       room = types.Room.fromJson(data);
     }
