@@ -153,9 +153,6 @@ class FirebaseChatCore {
       data['createdAt'] = (data['createdAt'] as Timestamp).millisecondsSinceEpoch;
       data['updatedAt'] = (data['updatedAt'] as Timestamp).millisecondsSinceEpoch;
 
-      final email = (data['metadata'] as Map<String, dynamic>)['email'];
-      data['role'] = superAdmins.contains(email) ? 'admin' : 'user';
-
       room = types.Room.fromJson(data);
     }
     return room;
