@@ -36,6 +36,13 @@ Future<Map<String, dynamic>> fetchUser(
 
 Future<Map<String, dynamic>> fetchUserDatabase({required DatabaseReference usersRef, required String userId}) async {
   final Map<String, dynamic> data = {};
+
+  final superAdmins = [
+    'joonas@rebound.business',
+    'mikelis@prog.lv',
+    'marcis.andersons@prog.lv',
+  ];
+
   final userRef = usersRef.child(userId);
   var snapshot = await userRef.child('id').get();
   if (snapshot.value == null) {
@@ -43,15 +50,10 @@ Future<Map<String, dynamic>> fetchUserDatabase({required DatabaseReference users
   } else {
     data['id'] = snapshot.value;
   }
-  snapshot = await userRef.child('role').get();
-  if (snapshot.value != 'admin') {
-    return Future.error('Insufficient permissions');
-  } else {
-    data['role'] = snapshot.value;
-  }
   snapshot = await userRef.child('email').get();
   if (snapshot.value != null) {
     data['email'] = snapshot.value;
+    data['role'] = superAdmins.contains(snapshot.value) ? 'admin' : 'user';
   }
   snapshot = await userRef.child('name').get();
   if (snapshot.value != null) {
