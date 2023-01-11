@@ -35,7 +35,7 @@ Future<Map<String, dynamic>> fetchUser(
 }
 
 Future<Map<String, dynamic>> fetchUserDatabase({required DatabaseReference usersRef, required String userId}) async {
-  final data = {};
+  final Map<String, dynamic> data = {};
   final userRef = usersRef.child(userId);
   var snapshot = await userRef.child('id').get();
   if (snapshot.value == null) {
@@ -64,7 +64,7 @@ Future<Map<String, dynamic>> fetchUserDatabase({required DatabaseReference users
   data['imageUrl'] = null;
   data['lastSeen'] = null;
 
-  return data as Future<Map<String, dynamic>>;
+  return data;
 }
 
 Timestamp formatToTimestamp(String date) => Timestamp.fromDate(DateTime.parse(date));
