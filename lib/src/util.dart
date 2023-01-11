@@ -59,7 +59,7 @@ Future<Map<String, dynamic>> fetchUserDatabase({required DatabaseReference users
   }
   snapshot = await userRef.child('registration').get();
   if (snapshot.value != null) {
-    data['createdAt'] = formatToTimestamp(snapshot.value as String);
+    data['createdAt'] = formatToTimestamp(snapshot.value as String).millisecondsSinceEpoch;
   }
   data['imageUrl'] = null;
   data['lastSeen'] = null;
