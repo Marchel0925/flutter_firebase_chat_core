@@ -191,6 +191,9 @@ class FirebaseChatCore {
     }
     jsonRoom['userIds'] = ids;
     jsonRoom['userRoles'] = roles;
+    jsonRoom['createdAt'] = Timestamp.fromMillisecondsSinceEpoch(jsonRoom['createdAt']);
+    jsonRoom['updatedAt'] = Timestamp.fromMillisecondsSinceEpoch(jsonRoom['updatedAt']);
+
 
     await roomsCollection.doc(room.name).set(jsonRoom);
 
