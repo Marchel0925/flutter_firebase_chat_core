@@ -171,17 +171,28 @@ class FirebaseChatCore {
     return room;
   }
 
-  Future<types.Room> addUserToGroupGroup(String userId, String roomName) async {
-    var room = await fetchRoom(roomName);
+  Future<types.Room> addUserToGroupChat(String userId, String roomName) async {
+    final room = await fetchRoom(roomName);
     if (room == null) {
       return Future.error("No room with name '$roomName'");
     }
     final users = room.users;
     final user = await constructUser(userId);
     users.add(user);
-    room = room.copyWith(users: users);
 
-    await roomsCollection.doc(room.name).set(room.toJson());
+    final jsonRoom = room.toJson();
+    jsonRoom.removeWhere((key, value) => key == 'users');
+
+    final ids = [];
+    final roles = [];
+    for (var user in users) {
+      ids.add(user.id);
+      roles.add({user.id: (user.role as types.Role).toShortString()});
+    }
+    jsonRoom['userIds'] = ids;
+    jsonRoom['userRoles'] = roles;
+
+    await roomsCollection.doc(room.name).set(jsonRoom);
 
     return room;
   }
