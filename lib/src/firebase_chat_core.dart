@@ -184,10 +184,10 @@ class FirebaseChatCore {
     jsonRoom.removeWhere((key, value) => key == 'users');
 
     final ids = [];
-    final roles = [];
+    final roles = {};
     for (var user in users) {
       ids.add(user.id);
-      roles.add({user.id: (user.role as types.Role).toShortString()});
+      roles[user.id] = (user.role as types.Role).toShortString();
     }
     jsonRoom['userIds'] = ids;
     jsonRoom['userRoles'] = roles;
