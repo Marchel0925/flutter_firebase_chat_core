@@ -52,12 +52,12 @@ Future<Map<String, dynamic>> fetchUserDatabase({required DatabaseReference users
   }
   snapshot = await userRef.child('email').get();
   if (snapshot.value != null) {
-    data['email'] = snapshot.value;
+    data['metadata'] = {'email': snapshot.value};
     data['role'] = superAdmins.contains(snapshot.value) ? 'admin' : 'user';
   }
   snapshot = await userRef.child('name').get();
   if (snapshot.value != null) {
-    data['name'] = snapshot.value;
+    data['firstName'] = snapshot.value;
   }
   snapshot = await userRef.child('registration').get();
   if (snapshot.value != null) {
