@@ -176,18 +176,24 @@ class FirebaseChatCore {
     if (room == null) {
       return Future.error("No room with name '$roomName'");
     }
+
     final users = room.users;
-    final user = await constructUser(userId);
-    users.add(user);
 
-    final ids = [];
-    final roles = {};
-    for (var user in users) {
-      ids.add(user.id);
-      roles[user.id] = (user.role as types.Role).toShortString();
+    final checkUser = users.where((element) => element.id == userId).toList();
+
+    if (checkUser.isEmpty) {
+      final user = await constructUser(userId);
+      users.add(user);
+
+      final ids = [];
+      final roles = {};
+      for (var user in users) {
+        ids.add(user.id);
+        roles[user.id] = (user.role as types.Role).toShortString();
+      }
+
+      await roomsCollection.doc(room.name).update({'userIds': ids, 'userRoles': roles, 'updatedAt': Timestamp.now()});
     }
-
-    await roomsCollection.doc(room.name).update({'userIds': ids, 'userRoles': roles, 'updatedAt': Timestamp.now()});
 
     return room;
   }
