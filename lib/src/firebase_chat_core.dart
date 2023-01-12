@@ -180,22 +180,14 @@ class FirebaseChatCore {
     final user = await constructUser(userId);
     users.add(user);
 
-    final jsonRoom = room.toJson();
-    jsonRoom.removeWhere((key, value) => key == 'users');
-
     final ids = [];
     final roles = {};
     for (var user in users) {
       ids.add(user.id);
       roles[user.id] = (user.role as types.Role).toShortString();
     }
-    jsonRoom['userIds'] = ids;
-    jsonRoom['userRoles'] = roles;
-    jsonRoom['createdAt'] = Timestamp.fromMillisecondsSinceEpoch(jsonRoom['createdAt']);
-    jsonRoom['updatedAt'] = Timestamp.fromMillisecondsSinceEpoch(jsonRoom['updatedAt']);
 
-
-    await roomsCollection.doc(room.name).set(jsonRoom);
+    await roomsCollection.doc(room.name).update({'userIds': ids, 'userRoles': roles, 'updatedAt': Timestamp.now()});
 
     return room;
   }
