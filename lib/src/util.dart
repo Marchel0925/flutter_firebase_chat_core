@@ -42,15 +42,11 @@ Future<Map<String, dynamic>> fetchUserDatabase({required DatabaseReference users
     'mikelis@prog.lv',
     'marcis.andersons@prog.lv',
   ];
+  data['id'] = userId;
 
   final userRef = usersRef.child(userId);
-  var snapshot = await userRef.child('id').get();
-  if (snapshot.value == null) {
-    return Future.error('No id parameter');
-  } else {
-    data['id'] = snapshot.value;
-  }
-  snapshot = await userRef.child('email').get();
+
+  var snapshot = await userRef.child('email').get();
   if (snapshot.value != null) {
     data['metadata'] = {'email': snapshot.value};
     data['role'] = superAdmins.contains(snapshot.value) ? 'admin' : 'user';
