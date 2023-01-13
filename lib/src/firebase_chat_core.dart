@@ -206,6 +206,7 @@ class FirebaseChatCore {
 
     if (snapshot.value != null) {
       metadata['email'] = snapshot.value;
+      user = user.copyWith(role: superAdmins.contains(snapshot.value) ? types.Role.admin : types.Role.user);
     }
 
     snapshot = await userRef.child('registered').get();
